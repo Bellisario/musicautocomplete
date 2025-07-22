@@ -1,12 +1,11 @@
 {
     "fmt": {
-        "options": {
-            "singleQuote": true,
-            "indentWidth": 4
-        }
+        "singleQuote": true,
+        "indentWidth": 4
     },
+    "unstable": ["kv", "cron"],
     "tasks": {
-        "start": "deno run --allow-net --allow-read main.ts",
-        "dev": "deno run --allow-net --allow-read --watch main.ts"
+        "start": "deno run --allow-net --allow-read --allow-env --env-file main.ts",
+        "dev": "deno run --allow-net --allow-read --allow-env --env-file --watch main.ts"
     }
 }

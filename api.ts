@@ -30,9 +30,16 @@ interface SearchResponseItem {
     uploaderVerified: boolean;
 }
 
-async function getAutocomplete(query: string): Promise<string[]> {
+const GITHUB_TOKEN = Deno.env.get('GITHUB_TOKEN');
+const DEFAULT_INSTANCE = Deno.env.get('DEFAULT_INSTANCE') ??
+    'https://pipedapi.kavin.rocks';
+
+async function getAutocomplete(
+    query: string,
+    instanceURL: string = DEFAULT_INSTANCE,
+): Promise<string[]> {
     const res = await fetch(
-        `https://pipedapi.kavin.rocks/search?q=${
+        `${instanceURL}/search?q=${
             encodeURIComponent(query)
         }&filter=music_songs`,
     );
@@ -42,5 +49,41 @@ async function getAutocomplete(query: string): Promise<string[]> {
     // return first 10 results
     return Array.from(completions).slice(0, 10);
 }
+// dynamic instances powered by uma
+// https://github.com/n-ce/Uma
+async function getDynamicInstances(): Promise<string[] | undefined> {
+    const res = await fetch(
+        'https://raw.githubusercontent.com/n-ce/Uma/main/dynamic_instances.json',
+        GITHUB_TOKEN
+            ? {
+                headers: {
+                    Authorization: `token ${GITHUB_TOKEN}`,
+                },
+            }
+            : {},
+    );
+    const json = await res.json() as { piped?: string[] };
 
-export { type ApiResponse, getAutocomplete };
+    return json.piped;
+}
+async function dynamicInstancesCron() {
+    let instances: string[] | undefined;
+    try {
+        instances = await getDynamicInstances();
+    } catch (e) {
+        console.log(`Failed to get dynamic instances\n${e}`);
+        return;
+    }
+    if (!instances || instances.length === 0) return;
+
+    const kv = await Deno.openKv();
+    await kv.set(['dynamic_instances'], instances);
+}
+
+export {
+    type ApiResponse,
+    DEFAULT_INSTANCE,
+    dynamicInstancesCron,
+    getAutocomplete,
+    getDynamicInstances,
+};

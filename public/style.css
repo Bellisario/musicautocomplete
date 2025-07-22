@@ -46,7 +46,7 @@ p,
     padding: 3em;
 }
 
-.container> :last-child {
+.container > :last-child {
     margin-bottom: 0;
 }
 
@@ -87,7 +87,6 @@ a {
 }
 
 @keyframes octocat-wave {
-
     0%,
     100% {
         transform: rotate(0);

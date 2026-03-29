@@ -1,3 +1,9 @@
+> [!NOTE]
+> This project is archived due to Deno Deploy changes (Deno Deploy Classic shutdown) ([see this](https://github.com/denoland/deploy_feedback/issues/936)).
+> 
+> That would make difficult for me to host a Deno API endpoint.\
+> Beyond that, I currently plan not to use this API.
+
 # Music Autocomplete
 
 > Get autocomplete for music search with the power of Deno.
